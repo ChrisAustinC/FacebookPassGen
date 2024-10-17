@@ -4,23 +4,33 @@ import itertools
 def get_facebook_data():
     print("[*] Please enter the Facebook profile details manually.")
     name = raw_input("Enter the person's full name: ").strip()
+    nickname = raw_input("Enter the person's nickname (if known): ").strip()
     birthday = raw_input("Enter the person's birthday (e.g., 1990-07-12): ").strip()
-    pet_name = raw_input("Enter the person's pet name (if known): ").strip()
+    hometown = raw_input("Enter the person's hometown: ").strip()
+    pet_name = raw_input("Enter the person's pet name: ").strip()
     favorite_team = raw_input("Enter the person's favorite team or hobby: ").strip()
+    phone_number = raw_input("Enter the last 4 digits of their phone number (if known): ").strip()
 
     print "\n[+] Collected Information:"
     print "Name: {}".format(name)
+    print "Nickname: {}".format(nickname)
     print "Birthday: {}".format(birthday)
+    print "Hometown: {}".format(hometown)
     print "Pet Name: {}".format(pet_name)
     print "Favorite Team: {}".format(favorite_team)
+    print "Phone Number (last 4 digits): {}".format(phone_number)
 
-    return name, birthday, pet_name, favorite_team
+    return name, nickname, birthday, hometown, pet_name, favorite_team, phone_number
 
 # Step 2: Generate password combinations
-def generate_passwords(name, birthday, pet_name, favorite_team):
-    # Split the inputs into parts and process them
-    parts = name.split() + birthday.split('-') + [pet_name, favorite_team]
-    parts = [p.lower() for p in parts if p]
+def generate_passwords(name, nickname, birthday, hometown, pet_name, favorite_team, phone_number):
+    # Process input into parts
+    parts = (
+        name.split() + nickname.split() +
+        birthday.split('-') + hometown.split() +
+        [pet_name, favorite_team, phone_number]
+    )
+    parts = [p.lower() for p in parts if p]  # Filter out empty inputs
 
     # Substitution rules: 'a' -> '@', 'i' -> '1', 'o' -> '0'
     substitutions = {'a': '@', 'i': '1', 'o': '0', 'e': '3', 's': '$'}
@@ -29,5 +39,47 @@ def generate_passwords(name, birthday, pet_name, favorite_team):
         for part in parts
     ]
 
-    # Add special years and characters
-    years = ['2021', '2022',
+    # Add years, special characters, and relationship keywords
+    years = ['2021', '2022', '2023', '1995', '1990', '123']
+    special_chars = ['!', '@', '#', '$']
+    relationships = ['love', 'forever', 'bff', 'friend']
+
+    # Generate combinations: [parts + years + special chars]
+    base_combinations = itertools.product(substituted_parts, years, special_chars)
+    passwords = [''.join(comb) for comb in base_combinations]
+
+    # Add relationship-related patterns
+    for part in substituted_parts:
+        for relationship in relationships:
+            passwords.append(part + relationship)
+            passwords.append(relationship + part)
+
+    # Add double-word patterns (e.g., "johnjohn", "lakers2023")
+    for part in substituted_parts:
+        passwords.append(part + part)
+        passwords.extend([part + year for year in years])
+
+    print "\n[+] Generated {} passwords.".format(len(passwords))
+    return passwords
+
+# Step 3: Save passwords to a file
+def save_passwords(password_list, filename='enhanced_facebook_passwords.txt'):
+    with open(filename, 'w') as f:
+        for password in password_list:
+            f.write(password + '\n')
+    print "[+] Passwords saved to {}".format(filename)
+
+# Main function to run the script
+def main():
+    # Collect profile details from user input
+    name, nickname, birthday, hometown, pet_name, favorite_team, phone_number = get_facebook_data()
+    
+    # Generate passwords from collected data
+    passwords = generate_passwords(name, nickname, birthday, hometown, pet_name, favorite_team, phone_number)
+
+    # Save generated passwords to a file
+    save_passwords(passwords)
+
+# Run the script
+if __name__ == "__main__":
+    main()
