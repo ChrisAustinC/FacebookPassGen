@@ -1,0 +1,33 @@
+import itertools
+
+# Step 1: Collect Facebook profile details manually
+def get_facebook_data():
+    print("[*] Please enter the Facebook profile details manually.")
+    name = raw_input("Enter the person's full name: ").strip()
+    birthday = raw_input("Enter the person's birthday (e.g., 1990-07-12): ").strip()
+    pet_name = raw_input("Enter the person's pet name (if known): ").strip()
+    favorite_team = raw_input("Enter the person's favorite team or hobby: ").strip()
+
+    print "\n[+] Collected Information:"
+    print "Name: {}".format(name)
+    print "Birthday: {}".format(birthday)
+    print "Pet Name: {}".format(pet_name)
+    print "Favorite Team: {}".format(favorite_team)
+
+    return name, birthday, pet_name, favorite_team
+
+# Step 2: Generate password combinations
+def generate_passwords(name, birthday, pet_name, favorite_team):
+    # Split the inputs into parts and process them
+    parts = name.split() + birthday.split('-') + [pet_name, favorite_team]
+    parts = [p.lower() for p in parts if p]
+
+    # Substitution rules: 'a' -> '@', 'i' -> '1', 'o' -> '0'
+    substitutions = {'a': '@', 'i': '1', 'o': '0', 'e': '3', 's': '$'}
+    substituted_parts = [
+        ''.join(substitutions.get(char, char) for char in part)
+        for part in parts
+    ]
+
+    # Add special years and characters
+    years = ['2021', '2022',
