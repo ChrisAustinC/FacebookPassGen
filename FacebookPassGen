@@ -1,4 +1,3 @@
-import itertools
 
 # Step 1: Collect Facebook profile details manually
 def get_facebook_data():
